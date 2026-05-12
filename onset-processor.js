@@ -15,7 +15,7 @@ const FRAME_SIZE = 1024;
 const HOP_SIZE = 256;
 const LOCAL_MEAN_FRAMES = 32;
 const NOISE_FLOOR_DB = -50.0;
-const THRESHOLD_FACTOR = 2.2;
+let THRESHOLD_FACTOR = 2.2;
 const MIN_INTERVAL_MS = 50.0;
 
 // --- In-place radix-2 Cooley-Tukey FFT ---
@@ -70,6 +70,9 @@ for (let i = 0; i < FRAME_SIZE; i++) {
 class OnsetProcessor extends AudioWorkletProcessor {
   constructor() {
     super();
+    this.port.onmessage = (e) => {
+      if (e.data.type === 'setThreshold') THRESHOLD_FACTOR = e.data.value;
+    };
     // Ring buffer accumulating incoming samples
     this._buffer = new Float32Array(0);
     this._bufferStartTime = null;  // stream time of buffer[0]
